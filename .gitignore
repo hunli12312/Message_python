@@ -1,0 +1,50 @@
+# Byte-compiled Python files
+__pycache__/
+*.py[cod]
+
+# Virtual environment directories
+env/
+venv/
+ENV/
+*.venv
+
+# Build directories
+build/
+dist/
+cross-build/
+
+# Distribution / packaging
+*.egg-info/
+.eggs/
+*.egg
+*.whl
+
+# Log files
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*~
+
+# Docker files (if you want to ignore generated images or containers)
+*.tar
+*.img
+
+# macOS files
+.DS_Store
+
+# Visual Studio Code settings
+.vscode/
+
+# Backup files
+*.swp
+
+# Ignore the h264-replay-viewer.yml if it's generated or temporary
+h264-replay-viewer.yml
+
+# Other compiled files
+*.o
+*.so
+*.exe

@@ -1,0 +1,18 @@
+# Dockerfile.listener.armhf
+
+FROM od4-base-armhf
+
+# Set working directory
+WORKDIR /app
+
+# Copy listener script and necessary modules
+COPY listener.py .
+COPY OD4Session.py .
+COPY opendlv_standard_message_set_v0_9_10_pb2.py .
+COPY cluonDataStructures_pb2.py .
+
+# Ensure scripts have execute permissions
+RUN chmod +x listener.py
+
+# Set the default command to run the listener
+CMD ["python3", "listener.py"]
