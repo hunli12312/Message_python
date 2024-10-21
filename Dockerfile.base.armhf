@@ -36,4 +36,3 @@ COPY . /opt/sources
 RUN chmod +x listener.py
 
 ENTRYPOINT ["python3", "listener.py"]
-
