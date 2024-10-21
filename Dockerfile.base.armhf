@@ -1,9 +1,8 @@
-# Dockerfile.base.armhf
-
+# Use the same base image as sender
 FROM arm32v7/ubuntu:18.04
-MAINTAINER Christian Berger "christian.berger@gu.se"
+# If on x86_64 architecture, you can use:
+# FROM ubuntu:18.04
 
-# Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -y && \
@@ -15,18 +14,26 @@ RUN apt-get update -y && \
     apt-get dist-upgrade -y && \
     apt-get install -y --no-install-recommends \
         build-essential \
-        python-protobuf \
-        python-sysv-ipc \
-        python-numpy \
-        python-opencv \
+        python3-protobuf \
+        python3-sysv-ipc \
+        python3-numpy \
+        python3-pip \
+        python3-opencv \
         protobuf-compiler \
         libcluon && \
     apt-get clean
 
-ADD . /opt/sources
+RUN pip3 install --upgrade pip && \
+    pip3 install protobuf==3.17.3
+    
 WORKDIR /opt/sources
-RUN make
-# Run make to build the application (if necessary)
-RUN make || echo "Make not required or failed. Continuing..."
 
-# Note: Do not set ENTRYPOINT here to allow flexibility for sender and listener
+COPY . /opt/sources
+
+# If you have a requirements.txt file, uncomment the next line
+# RUN pip3 install --no-cache-dir -r requirements.txt
+
+RUN chmod +x listener.py
+
+ENTRYPOINT ["python3", "listener.py"]
+
