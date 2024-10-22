@@ -41,7 +41,7 @@ cd Message_python
 
 * Step 3: The image should be build, just run:
 ```bash
-docker-compose -f docker build -t listener -f Dockerfile.base.armhf .
+docker build -t listener -f Dockerfile.base.armhf .
 ```
 This step needs to be repeated whenever you change something in the message specifications.
 
