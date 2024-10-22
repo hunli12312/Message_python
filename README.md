@@ -26,7 +26,7 @@ sudo apt-get install --no-install-recommends \
 
 ---
 
-## Developing and testing the Python application on your laptop using replay mode
+## Developing and testing the Python application on your laptop
 
 This template folder contains an example how to use Python to process data residing in a shared memory area using OpenCV for image processing.
 
@@ -56,6 +56,44 @@ The application should start and wait for images to come in. Furthermore, the co
 
 You can stop the Python application by pressing `Ctrl-C`. When you are modifying the Python application, repeat step 4 after any change to your software.
 
+## Listening and Sending the data to the unity
+
+This processes contain the info how to conduct and run the function in the OpenLab.
+
+* Step 1: Clone this repository under same the 'docker-compose.yml' (Or you can backup the docker-compose.yml for following processes)
+So it should be -docker-compose.yml
+                -Messsage_python  
+In the Message_python folder, you can check the 'listener.py' to see if the Unity IP is the IP belongs to the laptop running Unity. Otherwise, you should change to the IP into right IP (Ethernet in most case).
+
+
+* Step 2: Adding the following line to the docker-compose.yml (if you back up it, using the backup version .yml) in the end under same dirctories:
+```bash
+services:
+  # Other services remains same.
+  listener:
+    container_name: opendlv-listener
+    build:
+      context: ./Message_python
+      dockerfile: Dockerfile.base.armhf
+    restart: always
+    network_mode: "host"
+    command: ["python3", "listener.py"]
+
+```
+
+* Step 3: Run the container:
+```bash
+docker-compose -f docker-compose.yml up -d
+```
+(If you don't back up, run the exmaple command. Otherwise, you need to change 'docker-compose.yml' to the your own '***.yml')
+
+* Step 4: Run the Unity:
+The unity project can get the signal from docker-compose.
+
+quit: docker-compose -f docker-compose.yml down
+
 ---
 The listener.py should be modified based on the Unity server IP address.
 ---
+
+
