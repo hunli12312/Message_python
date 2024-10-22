@@ -1,4 +1,4 @@
-# Processing image data with OpenCV and controlling Kiwi using Python
+# Listening the message and passing to the Unity.
 
 This Python-template demonstrates how to develop a software module to process video data (eg., image detection, etc.) and to control Kiwi.
 
@@ -55,25 +55,6 @@ docker run -it --rm listener
 The application should start and wait for images to come in. Furthermore, the code also display all other sensor values from the recording file, and the code example show how these messages can be parsed.
 
 You can stop the Python application by pressing `Ctrl-C`. When you are modifying the Python application, repeat step 4 after any change to your software.
-
----
-
-## Deploying and testing the Python application in Kiwi simulation
-
-* Step 1: Have the previous tutorial completed.
-
-* Step 2: Start the simulation as described in section 3.1.
-
-* Step 3: Inside `opendlv-perception-helloworld.py` change the name of the shared memory from `/tmp/img.argb` to `/tmp/video0.argb`
-
-* Step 4: Open another terminal. Then run the Python (note that you need version 3) module from the folder `opendlv-perception-helloworld-python`:
-```bash
-python3 opendlv-perception-helloworld.py
-```
-
-The application should start and wait for images to come in. Furthermore, the code also display all other sensor values from the recording file, and the code example show how these messages can be parsed. You can also send actuation signals, as exemplified in the code, to steer the simulated robot.
-
-You can stop your software component by pressing `Ctrl-C`. When you are modifying the software component, repeat step 4 after any change to your software.
 
 ---
 The listener.py should be modified based on the Unity server IP address.
