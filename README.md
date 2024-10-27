@@ -1,4 +1,4 @@
-# Processing image data with OpenCV and controlling Kiwi using Python
+# Listening the message and passing to the Unity.
 
 This Python-template demonstrates how to develop a software module to process video data (eg., image detection, etc.) and to control Kiwi.
 
@@ -26,7 +26,7 @@ sudo apt-get install --no-install-recommends \
 
 ---
 
-## Developing and testing the Python application on your laptop using replay mode
+## Developing and testing the Python application on your laptop
 
 This template folder contains an example how to use Python to process data residing in a shared memory area using OpenCV for image processing.
 
@@ -35,119 +35,65 @@ This template folder contains an example how to use Python to process data resid
 * Step 2: Clone this repository (if it was done already in the C++ tutorial, then skip command #2):
 ```bash
 cd $HOME
-git clone https://github.com/chalmers-revere/opendlv-tutorial-kiwi.git
-cd opendlv-tutorial-kiwi/opendlv-perception-helloworld-python
+git clone git@github.com:hunli12312/Message_python.git
+cd Message_python
 ```
 
-* Step 3: The Python script uses messages from the OpenDLV Standard Message Set. To use them with Python, just run:
+* Step 3: The image should be build, just run:
 ```bash
-make
+docker build -t listener -f Dockerfile.base.armhf .
 ```
 This step needs to be repeated whenever you change something in the message specifications.
 
-* Step 4: Now, you can start the h264 replay and web app as follows (the actual h264 replay microservice is built once during the first call). Remember to change the filename to a file that exists in `~/kiwi-recordings`. The replay will start automatically when the program starts, including a video stream put in shared memory, and you can use the web app to see data UDP multicast data. You should see a video running on your screen before continuing.
+* Step 4: Run the file by running:
 
 ```bash
-docker-compose -f h264-replay-viewer.yml up
+docker run -it --rm listener
 ```
 
-
-* Step 4: Open another terminal. Then run the Python (note that you need version 3) module from the folder `opendlv-perception-helloworld-python`:
-```bash
-cd opendlv-tutorial-kiwi/opendlv-perception-helloworld-python
-python3 opendlv-perception-helloworld.py
-```
 
 The application should start and wait for images to come in. Furthermore, the code also display all other sensor values from the recording file, and the code example show how these messages can be parsed.
 
 You can stop the Python application by pressing `Ctrl-C`. When you are modifying the Python application, repeat step 4 after any change to your software.
 
----
+## Listening and Sending the data to the unity
 
-## Deploying and testing the Python application in Kiwi simulation
+This processes contain the info how to conduct and run the function in the OpenLab.
 
-* Step 1: Have the previous tutorial completed.
+* Step 1: Clone this repository under same the 'docker-compose.yml' (Or you can backup the docker-compose.yml for following processes)
+So it should be -docker-compose.yml
+                -Messsage_python  
+In the Message_python folder, you can check the 'listener.py' to see if the Unity IP is the IP belongs to the laptop running Unity. Otherwise, you should change to the IP into right IP (Ethernet in most case).
 
-* Step 2: Start the simulation as described in section 3.1.
 
-* Step 3: Inside `opendlv-perception-helloworld.py` change the name of the shared memory from `/tmp/img.argb` to `/tmp/video0.argb`
-
-* Step 4: Open another terminal. Then run the Python (note that you need version 3) module from the folder `opendlv-perception-helloworld-python`:
+* Step 2: Adding the following line to the docker-compose.yml (if you back up it, using the backup version .yml) in the end under same dirctories:
 ```bash
-python3 opendlv-perception-helloworld.py
+services:
+  # Other services remains same.
+  listener:
+    container_name: opendlv-listener
+    build:
+      context: ./Message_python
+      dockerfile: Dockerfile.base.armhf
+    restart: always
+    network_mode: "host"
+    command: ["python3", "listener.py"]
+
 ```
 
-The application should start and wait for images to come in. Furthermore, the code also display all other sensor values from the recording file, and the code example show how these messages can be parsed. You can also send actuation signals, as exemplified in the code, to steer the simulated robot.
+* Step 3: Run the container:
+```bash
+docker-compose -f docker-compose.yml up -d
+```
+(If you don't back up, run the exmaple command. Otherwise, you need to change 'docker-compose.yml' to the your own '***.yml')
 
-You can stop your software component by pressing `Ctrl-C`. When you are modifying the software component, repeat step 4 after any change to your software.
+* Step 4: Run the Unity:
+The unity project can get the signal from docker-compose.
+
+quit: docker-compose -f docker-compose.yml down
 
 ---
-
+The listener.py should be modified based on the Unity server IP address.
 ---
 
-## Deploying and testing the Python application on Kiwi
-
-After you have completed your development locally and you are ready for testing on Kiwi, you need to package the software into a Docker image.
-
-* Step 1: Have the previous tutorial completed.
-
-* Step 2: **Make sure that you commented all debug windows from OpenCV as there won't be a GUI available on Kiwi.''
-
-* Step 3: Don't forget to change the CID from 253 (used for replay mode) to 112 (used on Kiwi) so that the messages that you are sending are processed properly.
-
-* Step 4: Build the Docker image (don't forget the trailing `.`). The first time build process can take a while:
-```Bash
-docker build -t myapp -f Dockerfile.armhf .
-```
-
-* Step 5: Next, save the created Docker image to a file:
-```Bash
-docker save myapp > myapp.tar
-```
-
-* Step 6: Now, you copy the Docker image to Kiwi (the upload can take a few minutes):
-```Bash
-scp -P 2200 myapp.tar pi@192.168.8.1:~
-```
-
-* Step 7: Your application image is now on Kiwi; next, login to Kiwi to start it:
-```Bash
-ssh -p 2200 pi@192.168.8.1
-```
-
-* Step 8: Assuming that the Getting Started Tutorial 2 (Controlling Kiwi using your web browser) is still running, you can load your application into Docker and start it:
-```Bash
-docker load < myapp.tar
-docker run --rm -ti --init --ipc=host --net=host -v /tmp:/tmp myapp:latest 
-```
-
-When everything has worked correctly, you should see a message of type opendlv.proxy.AngleReading in the message overview of the web application.
-
----
-
-### Updating your Python application on Kiwi
-
-After you have completed your development locally and you are ready for testing on Kiwi, you need to package the software into a Docker image.
-
-* Step 1: Have the previous tutorial completed.
-
-* Step 2: **Make sure that you commented all debug windows from OpenCV as there won't be a GUI available on Kiwi.''
-
-* Step 3: Don't forget to change the CID from 253 (used for replay mode) to 112 (used on Kiwi) so that the messages that you are sending are processed properly.
-
-* Step 4: Copy your application opendlv-perception-helloworld.py to Kiwi:
-```Bash
-scp -P 2200 opendlv-perception-helloworld.py pi@192.168.8.1:~
-```
-
-* Step 5: Your application image is now on Kiwi; next, login to Kiwi to start it:
-```Bash
-ssh -p 2200 pi@192.168.8.1
-```
-
-* Step 6: Assuming that the Getting Started Tutorial 2 (Controlling Kiwi using your web browser) is still running, you can load your application into Docker and start it:
-```Bash
-docker run --rm -ti --init --ipc=host --net=host -v /tmp:/tmp -v $HOME/opendlv-perception-helloworld.py:/opt/sources/opendlv-perception-helloworld.py myapp:latest
-```
-The parameter `-v $HOME/opendlv-perception-helloworld.py:/opt/sources/opendlv-perception-helloworld.py` is mapping your Python application into the running Docker container and thus, replacing the one that is contained in the Docker image. If you need more files to run your application (e.g., `.xml` files), simply add further parameters like `-v $HOME/myFile.xml:/opt/sources/myFile.xml` before the past part of the previous command `myapp:latest`. 
 
